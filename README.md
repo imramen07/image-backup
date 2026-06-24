@@ -2,14 +2,8 @@
 A self-hosted, custom photo-backup system that automatically syncs new photos from Android device to PC over local network
 
 ## Architecture
-┌─────────────────┐        HTTP / REST        ┌─────────────────┐
-│   Android       │  ──── upload / delete ──► │   Arch Linux    │
-│   (Termux)      │  ◄─── ping / response ─── │   (Flask)       │
-│                 │                           │                 │
-│  and_client.py│                             │  server.py      │
-│  SQLite DB      │                           │  filesystem     │
-└─────────────────┘                           └─────────────────┘
-
+![alt text](<Screenshot From 2026-06-24 21-03-27.png>)
+---
 ## Prerequisites
 - Server ( Arch Linux )
     - Python
