@@ -1,5 +1,5 @@
 # Photo Backup - Server + Client
-A self-hosted, custom photo-backup system that automatically syns new photos from Android device to PC over local network
+A self-hosted, custom photo-backup system that automatically syncs new photos from Android device to PC over local network
 
 ## Architecture
 ┌─────────────────┐        HTTP / REST        ┌─────────────────┐
