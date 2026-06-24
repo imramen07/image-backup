@@ -6,8 +6,8 @@ A self-hosted, custom photo-backup system that automatically syncs new photos fr
 │   Android       │  ──── upload / delete ──► │   Arch Linux    │
 │   (Termux)      │  ◄─── ping / response ─── │   (Flask)       │
 │                 │                           │                 │
-│  and_client.py│                             │  server.py      │
-│  SQLite DB      │                           │  filesystem     │
+│  and_client.py  │                           │  server.py      │
+│  SQLite DB      │                           │  filesystem      │
 └─────────────────┘                           └─────────────────┘
 
 ## Prerequisites
