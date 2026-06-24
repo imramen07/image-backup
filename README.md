@@ -2,7 +2,7 @@
 A self-hosted, custom photo-backup system that automatically syncs new photos from Android device to PC over local network
 
 ## Architecture
-![alt text](<Screenshot From 2026-06-24 21-03-27.png>)
+<img src="assets/Screenshot%From%2026-06-24%21-03-27.png" alt="Screenshot" width="600">
 ---
 ## Prerequisites
 - Server ( Arch Linux )
