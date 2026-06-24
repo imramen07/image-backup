@@ -1,8 +1,8 @@
-# Photo Backup - Server + Client
+# Image Backup - Server + Client
 A self-hosted, custom photo-backup system that automatically syncs new photos from Android device to PC over local network
 
 ## Architecture
-<img src="assets/Screenshot%From%2026-06-24%21-03-27.png" alt="Screenshot" width="600">
+![Image](assets/ss1.png)
 ---
 ## Prerequisites
 - Server ( Arch Linux )
@@ -18,8 +18,8 @@ A self-hosted, custom photo-backup system that automatically syncs new photos fr
 ### Setup Server
 Clone repo and create project directory
 ```bash
-    git clone https://github.com/imramen07/photo-backup.git
-    cd photo-backup
+    git clone https://github.com/imramen07/image-backup.git
+    cd image-backup
 ```
 Install dependencies
 ```bash
