@@ -44,6 +44,14 @@ In Termux, run
     pkg update && pkg upgrade -y
     pkg install python -y
     pip install requests
+```
+Setup your preferred backup folder
+```bash
+    nano ~/and_client.py
+    //set in PHOTO_DIR, "~/storage/dcim/Camera" alter it as per your wish
+```
+
+```bash
     chmod +x and_client.py
     python and_client.py
 ```
