@@ -22,7 +22,10 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS photos
-    (filename TEXT PRIMARY KEY, mtime REAL, uploaded INTEGER DEFAULT 1)''')
+    (filename TEXT PRIMARY KEY,
+    mtime REAL,
+    uploaded INTEGER DEFAULT 1,
+    server_filename TEXT)''')
     conn.commit()
     return conn
 
@@ -52,9 +55,13 @@ def upload_file(fname, fpath):
         files = {'photo': (fname, f, 'image/jpeg')}
         try:
             r = requests.post(url, files=files, timeout=30)
-            return r.status_code == 200
+            if r.status_code == 200:
+                data = r.json()
+                return True, data.get('saved_as', fname)
+            else:
+                return False, None
         except:
-            return False
+            return False, None
 
 def notify_deletion(filenames):
     if not filenames:
@@ -79,8 +86,8 @@ def main():
     current_set = set(current_files.keys())
 
     # get known from db
-    c.execute("SELECT filename, mtime FROM photos WHERE uploaded=1")
-    db_rows = {row[0]: row[1] for row in c.fetchall()}
+    c.execute("SELECT filename, mtime, server_filename FROM photos WHERE uploaded=1")
+    db_rows = {row[0]: (row[1], row[2]) for row in c.fetchall()}
     db_set = set(db_rows.keys())
 
     # get deleteions
@@ -88,8 +95,11 @@ def main():
     # del from server
     del_files = db_set - current_set
     if del_files:
-        print(f"Deleting {len(del_files)} files from server: {del_files}")
-        if notify_deletion(list(del_files)):
+        # make list of server side names
+        ser_names = [dbrows[fname][1] for fname in del_files if db_rows[fname][1] is not None]
+        ser_names = [name or fname for fname, name in zip(del_files, ser_names)]
+        print(f"Deleting {len(ser_names)} files from server: {ser_names}")
+        if notify_deletion(ser_names):
             for fname in del_files:
                 c.execute("DELETE FROM photos WHERE filename=?", (fname,))
             conn.commit()
@@ -115,11 +125,12 @@ def main():
         if not os.path.exists(fpath):
             continue
         if upload_file(fname, fpath):
+            server_name = upload_file(fname, fpath)
             mtime = os.path.getmtime(fpath)
-            c.execute("INSERT OR REPLACE INTO photos (filename, mtime, uploaded) VALUES (?, ?, 1)",
-            (fname, mtime))
+            c.execute("INSERT OR REPLACE INTO photos (filename, mtime, uploaded) VALUES (?, ?, 1, ?)",
+            (fname, mtime, server_name))
             conn.commit()
-            print(f"Uploaded {fname}")
+            print(f"Uploaded {fname} as {server_name}")
         else:
             print(f"Failed to upload {fname}")
     conn.close()
