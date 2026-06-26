@@ -2,7 +2,6 @@ import os
 import shutil
 from flask import request, jsonify
 from server import STORAGE_BASE, app
-from server import known_files
 from server import get_destination_path
 #from server import scan_api_key
 from db import get_db
