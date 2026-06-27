@@ -9,6 +9,7 @@ app = Flask(__name__)
 #STORAGE_BASE = "~/phone-backup"
 #API_KEY = os.environ.get("API_KEY", "yourkey")
 from local_config import STORAGE_BASE
+STORAGE_BASE = os.path.expanduser(STORAGE_BASE)
 os.makedirs(STORAGE_BASE, exist_ok = True)
 
 init_db()
