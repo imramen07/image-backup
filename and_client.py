@@ -11,10 +11,10 @@ import json
 import time
 import requests
 from datetime import datetime
+from local_config import SERVER_URL
 
 # config
 PHOTO_DIR = os.path.expanduser("~/storage/dcim/Camera")
-from local_config import SERVER_URL
 DB_PATH = os.path.expanduser("~/photo_state.db")
 EXT = ('.jpg', '.jpeg', '.png')
 
@@ -42,7 +42,7 @@ def check_internet():
     # check server reachable
     try:
         print(f"Pinging {SERVER_URL}/ping")
-        r = requests.get(f"{SERVER_URL}/ping", timeout=3)
+        r = requests.get(f"{SERVER_URL}/ping", timeout=10)
         print(f"Response code: {r.status_code}")
         return r.status_code == 200
     except Exception as e:
@@ -96,8 +96,16 @@ def main():
     del_files = db_set - current_set
     if del_files:
         # make list of server side names
-        ser_names = [dbrows[fname][1] for fname in del_files if db_rows[fname][1] is not None]
-        ser_names = [name or fname for fname, name in zip(del_files, ser_names)]
+        #ser_names = [db_rows[fname][1] for fname in del_files if db_rows[fname][1] is not None]
+        ser_names = []
+        for fname in del_files:
+            name_on_server = db_rows[fname][1]
+            if name_on_server is not None:
+                ser_names.append(name_on_server)
+            else:
+                # if no name on server then use og name
+                ser_names.append(fname)
+        #ser_names = [name or fname for fname, name in zip(del_files, ser_names)]
         print(f"Deleting {len(ser_names)} files from server: {ser_names}")
         if notify_deletion(ser_names):
             for fname in del_files:
@@ -112,7 +120,8 @@ def main():
             to_push.append(fname)
         else:
             # check modifications by change in time
-            if abs(mtime - db_rows[fname]) > 1.0: # 1 sec tolerance
+            # use [0], return tuple
+            if abs(mtime - db_rows[fname][0]) > 1.0: # 1 sec tolerance
                 to_push.append(fname)
     if not to_push:
         print("No new files")
@@ -124,13 +133,15 @@ def main():
         fpath = os.path.join(PHOTO_DIR, fname)
         if not os.path.exists(fpath):
             continue
-        if upload_file(fname, fpath):
-            server_name = upload_file(fname, fpath)
+        # call once, unpack tuple
+        success, name_on_server = upload_file(fname, fpath)
+        if success:
             mtime = os.path.getmtime(fpath)
-            c.execute("INSERT OR REPLACE INTO photos (filename, mtime, uploaded) VALUES (?, ?, 1, ?)",
-            (fname, mtime, server_name))
+            # fix: add name on server colmn
+            c.execute("INSERT OR REPLACE INTO photos (filename, mtime, uploaded, server_filename) VALUES (?, ?, 1, ?)",
+            (fname, mtime, name_on_server))
             conn.commit()
-            print(f"Uploaded {fname} as {server_name}")
+            print(f"Uploaded {fname} as {name_on_server}")
         else:
             print(f"Failed to upload {fname}")
     conn.close()
