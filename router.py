@@ -54,15 +54,15 @@ def delete_photo():
     deleted = []
     not_found = []
     for fname in lis['filenames']:
-        # try find stored path for og name
-        c.execute("SELECT stored_path FROM files WHERE original_name = ?", (fname,))
+        # try find stored path for og name (name on server)
+        c.execute("SELECT stored_path FROM files WHERE stored_name = ?", (fname,))
         row = c.fetchone()
         if row:
             stored_path = row[0]
             if os.path.exists(stored_path):
                 os.remove(stored_path)
             # del from db
-            c.execute("DELETE FROM files WHERE original_name = ?", (fname,))
+            c.execute("DELETE FROM files WHERE stored_name = ?", (fname,))
             conn.commit()
             deleted.append(fname)
         else:
