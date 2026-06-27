@@ -37,20 +37,30 @@ Start the server
 It listens 0.0.0.0 so will be accessible from any device on local network
 ---
 ### Setup Client
+Get and_client.py and local_config.py in Android
 Open and_client.py in Termux
 Make sure storage permissions are granted to Termux
+```bash
+    termux-setup-storage
+```
+Verify with
+```bash
+    ls ~/storage
+```
+It must show - dcim downloads ...
 In Termux, run
 ```bash
     pkg update && pkg upgrade -y
     pkg install python -y
     pip install requests
 ```
-Setup your preferred backup folder
+Setup your preferred backup folder, DEFAULT ~/storage/dcim/Camera
+skip for DEFAULT
+in PHOTO_DIR, alter folder path as per your wish
 ```bash
     nano ~/and_client.py
-    //set in PHOTO_DIR, "~/storage/dcim/Camera" alter it as per your wish
 ```
-
+Compile changed and Run client
 ```bash
     chmod +x and_client.py
     python and_client.py
